@@ -2,6 +2,8 @@
 
 Usage:
     commands.py download [<URL>] [-q | -d]
+    commands.py save [<URL>] [-q | -d]
+    commands.py check [<URL>] [-q | -d]
     commands.py -h
     commands.py -v
 
@@ -31,10 +33,9 @@ def url_to_filename(url):
 def download(url=None, **kwargs):
     # Firstofall, make sure if have some url
     url = url or DEFAULT_URL
-    filename = url_to_filename(url)
 
     # Always tell the user that you are working for him
-    logging.info(f"Downloading {url} to {filename}...")
+    logging.info(f"Downloading {url}...")
 
     try:
         # make the request, and make sure that it succeeds
@@ -45,12 +46,34 @@ def download(url=None, **kwargs):
         logging.error(err)
         raise SystemExit("Fail to download")
 
-    # save text in file
-    with open(filename, "w") as result_text:
-        result_text.write(response.text)
-
     # return the downloaded text (for testing purpose)
+    logging.info(f"Downloaded {response}...")
+    logging.debug(f"Downloaded {response.text}...")
     return response.text
+
+
+@dispatch.on('save')
+def save(url=None, **kwargs):
+    # Firstofall, make sure if have some url
+    url = url or DEFAULT_URL
+    filename = url_to_filename(url)
+
+    # download page
+    downloaded = download(url=url)
+
+    # for now save text in temporary file
+    logging.info(f"Saving response to {filename}...")
+
+    with open(filename, "w") as result_text:
+        result_text.write(downloaded)
+
+    # return the path to the saved file
+    return filename
+
+
+@dispatch.on('check')
+def check(url=None, **kwargs):
+    pass
 
 
 if __name__ == '__main__':
