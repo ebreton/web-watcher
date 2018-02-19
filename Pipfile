@@ -12,9 +12,11 @@ pytest = "*"
 pytest-cov = "*"
 coverage = "*"
 "autopep8" = "*"
+requests-mock = "*"
 
 
 [packages]
 
 docopt-dispatch = "*"
 pyyaml = "*"
+requests = "*"
