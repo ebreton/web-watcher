@@ -2,8 +2,8 @@
 
 Usage:
     commands.py download [--url=URL] [-q | -d]
-    commands.py save [--url=URL] [-q | -d]
-    commands.py check [--url=URL] [-q | -d]
+    commands.py save [--url=URL --base-dir=PATH] [-q | -d]
+    commands.py check [--url=URL --base-dir=PATH --output-file=PATH] [-q | -d]
     commands.py -h
     commands.py -v
 
@@ -24,23 +24,27 @@ from docopt import docopt
 from docopt_dispatch import dispatch
 
 from utils import set_logging_config
-from settings import VERSION, DEFAULT_URL, DEFAULT_HEADERS, \
+from settings import VERSION, REFERENCES_PATH, DEFAULT_URL, DEFAULT_HEADERS, \
     DEFAULT_DIFF_FILE, DEFAULT_INDENTATION, DEFAULT_LINE_LENGTH
 
 
-def url_to_filename(url):
+def url_to_filename(url, base_dir=''):
     parsed_url = urlparse(url)
     file_path = posixpath.basename(parsed_url.path)
 
     # if no basename (e.g. www.domain.com)
     if not file_path:
-        return f'{parsed_url.hostname}.html'
+        file_path = f'{parsed_url.hostname}.html'
 
     # if no extension (e.g www.domain.com/path)
     if not os.path.splitext(file_path)[1]:
-        return f'{file_path}.html'
+        file_path = f'{file_path}.html'
 
-    # otherwise, return without hesitation
+    # prefix with base_dir if given
+    if base_dir:
+        file_path = posixpath.join(base_dir, file_path)
+
+    # return new name
     return file_path
 
 
@@ -67,10 +71,11 @@ def download(url=None, **kwargs):
 
 
 @dispatch.on('save')
-def save(url=None, **kwargs):
+def save(url=None, base_dir=None, **kwargs):
     # Firstofall, make sure if have some url
     url = url or DEFAULT_URL
-    filename = url_to_filename(url)
+    base_dir = base_dir if base_dir is not None else REFERENCES_PATH
+    filename = url_to_filename(url, base_dir=base_dir)
 
     # download page
     downloaded = download(url=url)
@@ -86,7 +91,7 @@ def save(url=None, **kwargs):
 
 
 @dispatch.on('check')
-def check_identical(url=None, **kwargs):
+def check_identical(url=None, base_dir=None, output_file=None, **kwargs):
     """ Returns:
         - True if no reference found (in this case, a reference is created)
         - True if the downloaded file is identical to the reference
@@ -94,12 +99,14 @@ def check_identical(url=None, **kwargs):
     """
     # Firstofall, make sure if have some url
     url = url or DEFAULT_URL
+    base_dir = base_dir if base_dir is not None else REFERENCES_PATH
+    output_file = output_file if output_file is not None else DEFAULT_DIFF_FILE
 
     # Secondly, make sure if have a reference
-    filename = url_to_filename(url)
+    filename = url_to_filename(url, base_dir=base_dir)
     if not os.path.exists(filename):
         logging.info(f"Reference file {filename} not found, creating it...")
-        save(url=url)
+        save(url=url, base_dir=base_dir)
         # in this case, we have nothing to diff, just return
         return True
 
@@ -109,7 +116,7 @@ def check_identical(url=None, **kwargs):
     # open reference for comparison
     logging.info(f"Comparing downloaded file with reference...")
 
-    with open(filename) as reference, open(DEFAULT_DIFF_FILE, 'w') as output:
+    with open(filename) as reference, open(output_file, 'w') as output:
         # Use a comparator that will generate 'pretty' HTML
         comparator = difflib.HtmlDiff(
             tabsize=DEFAULT_INDENTATION,
@@ -129,7 +136,8 @@ def check_identical(url=None, **kwargs):
         # print differences in html file
         else:
             print(differences, file=output)
-            logging.info("Differences computed. open diff_file.html to check the results")
+            logging.info("Differences computed")
+            logging.info(" => open diff_file.html to check the results")
             return False
 
 

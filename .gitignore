@@ -103,3 +103,7 @@ ENV/
 
 # Visual code stuff
 .vscode
+
+# web-watcher
+references/*.html
+diff_file.html

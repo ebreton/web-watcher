@@ -15,10 +15,10 @@ def reference():
 
 def test_filename():
     assert url_to_filename("http://my.test.com") == "my.test.com.html"
-    assert url_to_filename("http://my.test.com/") == "my.test.com.html"
+    assert url_to_filename("http://my.test.com/", base_dir='./') == "./my.test.com.html"
     assert url_to_filename("http://my.test.com/download") == "download.html"
     assert url_to_filename("http://my.test.com/my/download.html") == "download.html"
-    assert url_to_filename("my.test.com/download.zip?format=zip") == "download.zip"
+    assert url_to_filename("my.test.com/download.zip?format=zip", base_dir='/tmp') == "/tmp/download.zip"
 
 
 def test_download(reference):
@@ -35,7 +35,7 @@ def test_save(reference):
     downloaded = os.path.join(TEST_PATH, 'first_download.html')
     with requests_mock.Mocker() as mocker, open(downloaded) as page:
         mocker.get(url, text=page.read())
-        assert save(url) == filename
+        assert save(url, base_dir='') == filename
         assert os.path.exists(filename)
     # clean up a bit
     os.remove(filename)
@@ -49,13 +49,13 @@ def test_check(reference):
     with requests_mock.Mocker() as mocker, open(downloaded) as page:
         mocker.get(url, text=page.read())
         # first save the file
-        save(url)
+        save(url, base_dir='')
         # then check identical one
-        assert check_identical(url)
+        assert check_identical(url, base_dir='')
     # check modifications
     with requests_mock.Mocker() as mocker, open(changed) as page:
         mocker.get(url, text=page.read())
-        assert not check_identical(url)
+        assert not check_identical(url, base_dir='')
     # clean up a bit
     os.remove(filename)
     os.remove(DEFAULT_DIFF_FILE)
