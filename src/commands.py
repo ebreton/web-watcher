@@ -13,7 +13,9 @@ Options:
 """
 import logging
 import requests
+import posixpath
 
+from urllib.parse import urlparse
 from docopt import docopt
 from docopt_dispatch import dispatch
 
@@ -21,13 +23,18 @@ from utils import set_logging_config
 from settings import VERSION, DEFAULT_URL
 
 
+def url_to_filename(url):
+    return posixpath.basename(urlparse(url).path)
+
+
 @dispatch.on('download')
 def download(url=None, **kwargs):
     # Firstofall, make sure if have some url
     url = url or DEFAULT_URL
+    filename = url_to_filename(url)
 
     # Always tell the user that you are working for him
-    logging.info(f"Downloading {url}...")
+    logging.info(f"Downloading {url} to {filename}...")
 
     try:
         # make the request, and make sure that it succeeds
@@ -38,8 +45,8 @@ def download(url=None, **kwargs):
         logging.error(err)
         raise SystemExit("Fail to download")
 
-    # for now save text in temporary file
-    with open("tmp.html", "w") as result_text:
+    # save text in file
+    with open(filename, "w") as result_text:
         result_text.write(response.text)
 
     # return the downloaded text (for testing purpose)
