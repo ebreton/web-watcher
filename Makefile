@@ -6,6 +6,7 @@
 
 vars:
 	@echo 'Environment-related vars:'
+	@echo '  DEFAULT_URL=${DEFAULT_URL}'
 	@echo '  PYTHONPATH=${PYTHONPATH}'
 
 init:
