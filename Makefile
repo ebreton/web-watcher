@@ -17,7 +17,7 @@ endif
 
 test: check-env
 	flake8 src --max-line-length=120
-	pytest --cov=src test
+	pytest --cov=src tests
 
 coverage: test
 	coverage html
