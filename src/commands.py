@@ -114,7 +114,7 @@ def check_identical(url=None, base_dir=None, output_file=None, **kwargs):
     downloaded = download(url=url)
 
     # open reference for comparison
-    logging.info(f"Comparing downloaded file with reference...")
+    logging.info("Comparing downloaded file with reference...")
 
     with open(filename) as reference, open(output_file, 'w') as output:
         # Use a comparator that will generate 'pretty' HTML

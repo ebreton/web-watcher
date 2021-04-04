@@ -14,8 +14,6 @@ ifeq ($(wildcard .env),)
 	cp .env.sample .env
 	echo PYTHONPATH=`pwd`/src >> .env
 endif
-	pipenv --update 
-	pipenv update --dev --python 3
 
 test: check-env
 	flake8 src --max-line-length=120
