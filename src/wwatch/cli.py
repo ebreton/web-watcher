@@ -43,7 +43,7 @@ app = LootMarshalTyper(cls=CustomHelpColorsGroup)
 
 @app.callback()
 def parent(
-    version: bool = typer.Option(False, '--version', is_eager=True, callback=version_callback),
+    version: bool = typer.Option(False, '--version', is_eager=True, callback=version_callback, show_default=False),
     verbose: int = typer.Option(0, '--verbose', '-v', count=True),
 ):
     """
