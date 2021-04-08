@@ -5,7 +5,7 @@ from typing import Optional
 from wwatch.schemas import Site, User, validate_email, validate_url
 from wwatch.cli import app
 from wwatch.settings import Settings
-
+from wwatch.downloader import add_sites
 
 settings = Settings()
 
@@ -37,12 +37,12 @@ def check(
         Check whether the given url has changed.
         Compare base on HTML if \033[1m--full\033[0m is given, otherwise on plain text
     """
-    to_check = Site(url=url)
+    add_sites([Site(url=url)])
 
     if full:
-        typer.echo(f"Comparing full HTML for {to_check}")
+        typer.echo(f"Comparing full HTML for {url}")
     else:
-        typer.echo(f"Diff text for {to_check}. Use \033[1m--full\033[0m to compare all HTML")
+        typer.echo(f"Diff text for {url}. Use \033[1m--full\033[0m to compare all HTML")
 
 
 @app.command('list')

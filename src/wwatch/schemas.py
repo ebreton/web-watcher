@@ -25,7 +25,8 @@ class User(BaseModel):
 def validate_email(value):
     try:
         if value is not None:
-            return User(email=value)
+            User(email=value)
+            return value
     except ValidationError as err:
         raise typer.BadParameter(str(err))
 
@@ -33,6 +34,7 @@ def validate_email(value):
 def validate_url(value):
     try:
         if value is not None:
-            return Site(url=value)
+            Site(url=value)
+            return value
     except ValidationError as err:
         raise typer.BadParameter(str(err))
