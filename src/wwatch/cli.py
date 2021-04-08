@@ -54,14 +54,12 @@ def parent(
         or on demand with \033[32mcheck\033[0m command
     """
     if verbose == 0:
-        logging_level = logging.ERROR
-    elif verbose == 1:
         logging_level = logging.WARNING
-    elif verbose == 2:
+    elif verbose == 1:
         logging_level = logging.INFO
-    elif verbose == 3:
+    elif verbose == 2:
         logging_level = logging.DEBUG
         debug(Settings().dict())
 
     logging.basicConfig(level=logging_level)
-    logging.info(f"Logging level set to {logging_level}")
+    logging.info(f"Logging level set to {logging.getLevelName(logging_level)}")

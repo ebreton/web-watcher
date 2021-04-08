@@ -20,10 +20,11 @@ typer = "^0.3.2"
 typer-cli = "^0.0.11"
 
 [tool.poetry.dev-dependencies]
+autopep8 = "^1.5.6"
+devtools = "^0.6.1"
 flake8 = "^3.9.0"
 pytest = "^6.2.3"
 pytest-cov = "^2.11.1"
-autopep8 = "^1.5.6"
 requests-mock = "^1.8.0"
 
 [build-system]

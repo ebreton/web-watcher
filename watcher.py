@@ -45,7 +45,7 @@ def check(
         typer.echo(f"Diff text for {to_check}. Use \033[1m--full\033[0m to compare all HTML")
 
 
-@app.command()
+@app.command('list')
 def list_by(
     email: str = typer.Option(None, help="Filter list with email (if provided)", callback=validate_email)
 ):
